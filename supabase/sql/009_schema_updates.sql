@@ -1,0 +1,10 @@
+-- Drivers Updates
+ALTER TABLE public.drivers ADD COLUMN IF NOT EXISTS phone VARCHAR(20);
+ALTER TABLE public.drivers ADD COLUMN IF NOT EXISTS email VARCHAR(150);
+ALTER TABLE public.drivers ADD COLUMN IF NOT EXISTS rg VARCHAR(50);
+ALTER TABLE public.drivers ADD COLUMN IF NOT EXISTS status VARCHAR(50) DEFAULT 'ativo';
+
+-- Fines Updates
+ALTER TABLE public.fines ADD COLUMN IF NOT EXISTS fine_number VARCHAR(100);
+ALTER TABLE public.fines ADD COLUMN IF NOT EXISTS due_date DATE;
+ALTER TABLE public.fines ADD COLUMN IF NOT EXISTS points INT DEFAULT 0;

@@ -1,0 +1,13 @@
+{
+  "name": "assetra",
+  "version": "1.0.0",
+  "description": "Assetra - Sistema de Gestão de Frotas e Facilities",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm -r dev",
+    "build": "pnpm -r build",
+    "start": "pnpm -r start",
+    "lint": "pnpm -r lint"
+  },
+  "packageManager": "pnpm@9.0.0"
+}

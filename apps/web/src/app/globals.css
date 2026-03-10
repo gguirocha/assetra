@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-primary: #5B5CFF;
+  --color-brand-secondary: #00E5FF;
+  --color-background: #050505;
+  --color-foreground: #f8fafc;
+  --color-surface: rgba(20, 20, 25, 0.7);
+  --color-border: rgba(91, 92, 255, 0.2);
+
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains);
+  --font-orbitron: var(--font-orbitron);
+}
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-inter), sans-serif;
+  /* Technological subtle grid */
+  background-image:
+    linear-gradient(to right, rgba(91, 92, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(91, 92, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  background-position: center center;
+  background-attachment: fixed;
+}
+
+/* Custom scrollbar for webkit */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1f1f2e;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #5B5CFF;
+}
+
+/* Utilities */
+.glow-primary {
+  box-shadow: 0 0 20px rgba(91, 92, 255, 0.15);
+}
+
+.glow-primary-strong {
+  box-shadow: 0 0 20px rgba(91, 92, 255, 0.4);
+}
+
+.glow-secondary {
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.15);
+}
+
+.glow-secondary-strong {
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+}
+
+.text-gradient {
+  background: linear-gradient(90deg, #5B5CFF 0%, #00E5FF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glass-card {
+  background: rgba(15, 15, 20, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glass-card:hover {
+  border-color: rgba(91, 92, 255, 0.3);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(91, 92, 255, 0.1);
+}
