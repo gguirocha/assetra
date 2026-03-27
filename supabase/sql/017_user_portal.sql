@@ -143,7 +143,14 @@ INSERT INTO public.permissions (action, module, description) VALUES
 ('admin.settings.write', 'admin', 'Editar configurações'),
 ('admin.audit.read', 'admin', 'Visualizar logs de auditoria'),
 ('admin.automations.read', 'admin', 'Visualizar automações'),
-('admin.automations.write', 'admin', 'Gerenciar automações')
+('admin.automations.write', 'admin', 'Gerenciar automações'),
+-- Ordens de Serviço (módulo unificado)
+('work_orders.orders.read', 'work_orders', 'Visualizar Ordens de Serviço'),
+('work_orders.orders.write', 'work_orders', 'Criar/editar Ordens de Serviço'),
+('work_orders.orders.delete', 'work_orders', 'Excluir Ordens de Serviço'),
+('work_orders.technician.read', 'work_orders', 'Acessar Portal do Técnico'),
+('work_orders.requester.read', 'work_orders', 'Acessar Portal do Solicitante'),
+('work_orders.orders.interact', 'work_orders', 'Interagir com OS (comentários, status)')
 ON CONFLICT (action) DO NOTHING;
 
 -- 8. Seed de automações padrão

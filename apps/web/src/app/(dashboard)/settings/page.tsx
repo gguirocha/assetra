@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
+import { createAdminUserAction } from './actions';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -42,7 +43,7 @@ export default function SettingsUsersPage() {
     const [search, setSearch] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [editUser, setEditUser] = useState<UserProfile | null>(null);
-    const [form, setForm] = useState({ name: '', email: '', phone: '', job_title: '', cost_center: '', unit: '', is_admin: false, roles: [] as string[] });
+    const [form, setForm] = useState({ name: '', email: '', phone: '', job_title: '', cost_center: '', unit: '', is_admin: false, is_technician: false, technician_service_types: [] as string[], roles: [] as string[] });
     const [saving, setSaving] = useState(false);
 
     const loadData = useCallback(async () => {
@@ -80,48 +81,17 @@ export default function SettingsUsersPage() {
         if (!form.name || !form.email) return;
         setSaving(true);
         try {
-            // Generate secure temp password
-            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
-            let tempPassword = '';
-            for (let i = 0; i < 10; i++) tempPassword += chars.charAt(Math.floor(Math.random() * chars.length));
-            tempPassword += 'A1!';
-
-            // Create auth user
-            const { data: authData, error: authError } = await supabase.auth.signUp({
-                email: form.email,
-                password: tempPassword,
-            });
-
-            if (authError) throw authError;
-            if (!authData.user) throw new Error('Falha ao criar usuário');
-
             const tenantRes = await supabase.from('tenants').select('id').limit(1).single();
+            const tenantId = tenantRes.data?.id;
+            
+            if (!tenantId) throw new Error('Sua organização (Tenant) não foi encontrada.');
 
-            // Create user profile
-            const { error: profileError } = await supabase.from('user_profiles').insert({
-                id: authData.user.id,
-                tenant_id: tenantRes.data?.id,
-                name: form.name,
-                email: form.email,
-                phone: form.phone,
-                job_title: form.job_title,
-                cost_center: form.cost_center,
-                unit: form.unit,
-                is_admin: form.is_admin,
-                must_change_password: true,
-                active: true,
-            });
+            const result = await createAdminUserAction(form, tenantId);
+            
+            if (result.error) throw new Error(result.error);
+            if (!result.success) throw new Error('Erro desconhecido na criação do usuário.');
 
-            if (profileError) throw profileError;
-
-            // Assign roles
-            if (form.roles.length > 0) {
-                const roleInserts = form.roles.map(roleId => ({
-                    user_id: authData.user!.id,
-                    role_id: roleId,
-                }));
-                await supabase.from('user_roles').insert(roleInserts);
-            }
+            const tempPassword = result.tempPassword;
 
             // Send invite email via SMTP
             try {
@@ -148,7 +118,7 @@ export default function SettingsUsersPage() {
             }
 
             setShowModal(false);
-            setForm({ name: '', email: '', phone: '', job_title: '', cost_center: '', unit: '', is_admin: false, roles: [] });
+            setForm({ name: '', email: '', phone: '', job_title: '', cost_center: '', unit: '', is_admin: false, is_technician: false, technician_service_types: [], roles: [] });
             loadData();
         } catch (err: any) {
             alert('Erro: ' + err.message);
@@ -169,6 +139,8 @@ export default function SettingsUsersPage() {
                 cost_center: form.cost_center,
                 unit: form.unit,
                 is_admin: form.is_admin,
+                is_technician: form.is_technician,
+                technician_service_types: form.is_technician ? form.technician_service_types : [],
             }).eq('id', editUser.id);
 
             if (error) throw error;
@@ -199,7 +171,7 @@ export default function SettingsUsersPage() {
         try {
             // Send reset via Supabase
             const { error } = await supabase.auth.resetPasswordForEmail(u.email, {
-                redirectTo: `${window.location.origin}/login`,
+                redirectTo: `${window.location.origin}/update-password`,
             });
             if (error) throw error;
 
@@ -207,7 +179,7 @@ export default function SettingsUsersPage() {
             await fetch('/api/email', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'reset_password', to: u.email, userName: u.name, resetUrl: `${window.location.origin}/login` }),
+                body: JSON.stringify({ action: 'reset_password', to: u.email, userName: u.name, resetUrl: `${window.location.origin}/update-password` }),
             });
 
             await supabase.from('user_profiles').update({ must_change_password: true }).eq('id', u.id);
@@ -227,6 +199,8 @@ export default function SettingsUsersPage() {
             cost_center: u.cost_center || '',
             unit: u.unit || '',
             is_admin: u.is_admin,
+            is_technician: (u as any).is_technician || false,
+            technician_service_types: (u as any).technician_service_types || [],
             roles: [],
         });
         // Load user roles
@@ -271,7 +245,7 @@ export default function SettingsUsersPage() {
                         className="w-full pl-9 pr-3 py-2 bg-black/30 border border-white/10 rounded-md text-white text-sm focus:outline-none focus:ring-[#00E5FF] focus:border-[#00E5FF]"
                         placeholder="Buscar usuário..." />
                 </div>
-                <Button size="sm" onClick={() => { setEditUser(null); setForm({ name: '', email: '', phone: '', job_title: '', cost_center: '', unit: '', is_admin: false, roles: [] }); setShowModal(true); }}
+                <Button size="sm" onClick={() => { setEditUser(null); setForm({ name: '', email: '', phone: '', job_title: '', cost_center: '', unit: '', is_admin: false, is_technician: false, technician_service_types: [], roles: [] }); setShowModal(true); }}
                     className="bg-gradient-to-r from-[#5B5CFF] to-[#00E5FF] text-white border-0 text-xs">
                     <UserPlus className="w-3.5 h-3.5 mr-1" /> Novo Usuário
                 </Button>
@@ -386,6 +360,33 @@ export default function SettingsUsersPage() {
                                     className="rounded border-white/20 bg-black/30 text-[#00E5FF] focus:ring-[#00E5FF]" />
                                 <label className="text-xs text-slate-300">Administrador do sistema</label>
                             </div>
+
+                            <div className="flex items-center gap-2 mt-1">
+                                <input type="checkbox" checked={form.is_technician} onChange={e => setForm({ ...form, is_technician: e.target.checked, technician_service_types: e.target.checked ? (form.technician_service_types.length > 0 ? form.technician_service_types : ['vehicle', 'machine', 'facility']) : [] })}
+                                    className="rounded border-white/20 bg-black/30 text-[#00E5FF] focus:ring-[#00E5FF]" />
+                                <label className="text-xs text-slate-300">Técnico de Manutenção</label>
+                            </div>
+
+                            {form.is_technician && (
+                                <div className="mt-2 p-3 bg-black/30 border border-white/5 rounded-lg">
+                                    <label className="text-xs text-slate-400 block mb-2">Tipos de Serviço do Técnico</label>
+                                    <div className="flex gap-2 flex-wrap">
+                                        {[{v:'vehicle',l:'🚗 Veículos'},{v:'machine',l:'⚙️ Máquinas'},{v:'facility',l:'🏢 Predial'}].map(opt => {
+                                            const checked = form.technician_service_types.includes(opt.v);
+                                            return (
+                                                <button key={opt.v} type="button"
+                                                    onClick={() => {
+                                                        const next = checked ? form.technician_service_types.filter(t => t !== opt.v) : [...form.technician_service_types, opt.v];
+                                                        setForm({ ...form, technician_service_types: next.length > 0 ? next : [opt.v] });
+                                                    }}
+                                                    className={`px-3 py-1.5 rounded-lg text-[11px] font-medium border transition-all ${checked ? 'border-[#00E5FF] bg-[#00E5FF]/10 text-[#00E5FF]' : 'border-white/10 bg-black/20 text-slate-400 hover:border-white/20'}`}>
+                                                    {opt.l}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            )}
 
                             <div>
                                 <label className="text-xs text-slate-400 block mb-2">Roles</label>

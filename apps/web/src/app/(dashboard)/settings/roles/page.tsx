@@ -280,7 +280,8 @@ export default function RolesPage() {
                                     const assignedCount = modPerms.filter(p => (rolePerms[selectedRole!] || []).includes(p.id)).length;
                                     const moduleLabels: Record<string, string> = {
                                         fleet: '🚛 Frota', maintenance: '🔧 Manutenção', inventory: '📦 Estoque',
-                                        fuel: '⛽ Abastecimento', carwash: '🫧 Lava-Jato', admin: '👤 Administração'
+                                        fuel: '⛽ Abastecimento', carwash: '🫧 Lava-Jato', admin: '👤 Administração',
+                                        work_orders: '📋 Ordens de Serviço'
                                     };
                                     return (
                                         <div key={mod} className="border border-white/5 rounded-lg overflow-hidden">

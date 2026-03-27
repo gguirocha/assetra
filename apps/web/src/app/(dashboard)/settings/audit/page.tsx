@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/Button';
 import { Settings, Users, Shield, ScrollText, Bell, Zap, Server, Search, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -102,8 +102,8 @@ export default function AuditPage() {
                         </thead>
                         <tbody>
                             {logs.map(log => (
-                                <>
-                                    <tr key={log.id} className="border-b border-white/5 hover:bg-white/[0.02] cursor-pointer transition-colors"
+                                <React.Fragment key={log.id}>
+                                    <tr className="border-b border-white/5 hover:bg-white/[0.02] cursor-pointer transition-colors"
                                         onClick={() => setExpandedLog(expandedLog === log.id ? null : log.id)}>
                                         <td className="p-3 text-slate-300 font-mono text-[11px]">{new Date(log.created_at).toLocaleString('pt-BR')}</td>
                                         <td className="p-3 text-white text-xs">{log.user_name || '-'}</td>
@@ -137,7 +137,7 @@ export default function AuditPage() {
                                             </td>
                                         </tr>
                                     )}
-                                </>
+                                </React.Fragment>
                             ))}
                             {logs.length === 0 && (
                                 <tr><td colSpan={7} className="text-center text-slate-500 py-8">Nenhum log encontrado.</td></tr>

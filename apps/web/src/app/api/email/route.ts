@@ -88,17 +88,17 @@ export async function POST(req: NextRequest) {
                         </div>
                         <div style="padding: 24px;">
                             <p style="color: #e0e0e0;">Olá <strong>${userName}</strong>,</p>
-                            <p style="color: #a0a0b0;">Sua conta no sistema Assetra foi criada. Utilize as credenciais abaixo para fazer seu primeiro acesso:</p>
+                            <p style="color: #a0a0b0;">Sua conta no sistema Assetra foi criada. Você pode acessar com as credenciais abaixo ou clicar no botão para definir sua própria senha:</p>
                             <div style="background: #12121a; border-radius: 8px; padding: 16px; margin: 16px 0; border: 1px solid rgba(91,92,255,0.3);">
                                 <p style="margin: 4px 0; color: #a0a0b0; font-size: 13px;">📧 <strong style="color: #00E5FF;">E-mail:</strong> ${to}</p>
                                 <p style="margin: 4px 0; color: #a0a0b0; font-size: 13px;">🔒 <strong style="color: #00E5FF;">Senha temporária:</strong> <code style="background: #5B5CFF33; padding: 2px 8px; border-radius: 4px; color: #5B5CFF; font-size: 14px;">${tempPassword}</code></p>
                             </div>
-                            <p style="color: #ef4444; font-size: 12px;">⚠️ Por segurança, altere sua senha após o primeiro acesso.</p>
                             <div style="text-align: center; margin-top: 20px;">
                                 <a href="${loginUrl || '#'}" style="display: inline-block; background: linear-gradient(135deg, #5B5CFF, #00E5FF); color: white; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px;">
                                     Acessar o Sistema →
                                 </a>
                             </div>
+                            <p style="color: #ef4444; font-size: 12px; margin-top: 16px; text-align: center;">⚠️ Por segurança, altere sua senha após o primeiro acesso.</p>
                         </div>
                         <div style="padding: 16px 24px; background: #12121a; text-align: center; font-size: 11px; color: #555;">
                             Assetra - Gestão de Frotas e Manutenção

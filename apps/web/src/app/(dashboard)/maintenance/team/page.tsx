@@ -20,8 +20,15 @@ const technicianSchema = z.object({
     hourly_cost: z.coerce.number().min(0).default(0),
     work_schedule: z.string().default('Seg-Sex, 08h as 18h'),
     max_active_os: z.coerce.number().min(1).default(5),
+    service_types: z.array(z.string()).default(['vehicle', 'machine', 'facility']),
     active: z.boolean().default(true)
 });
+
+const SERVICE_TYPE_OPTIONS = [
+    { value: 'vehicle', label: 'Veículos', emoji: '🚗' },
+    { value: 'machine', label: 'Máquinas', emoji: '⚙️' },
+    { value: 'facility', label: 'Predial', emoji: '🏢' },
+];
 
 type TechFormValues = z.infer<typeof technicianSchema>;
 
@@ -34,10 +41,12 @@ export default function TeamManagementPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [editingId, setEditingId] = useState<string | null>(null);
 
-    const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<TechFormValues>({
+    const { register, handleSubmit, reset, watch, setValue, formState: { errors, isSubmitting } } = useForm<TechFormValues>({
         resolver: zodResolver(technicianSchema) as any,
-        defaultValues: { active: true, hourly_cost: 0, max_active_os: 5, work_schedule: 'Seg-Sex, 08h as 18h' }
+        defaultValues: { active: true, hourly_cost: 0, max_active_os: 5, work_schedule: 'Seg-Sex, 08h as 18h', service_types: ['vehicle', 'machine', 'facility'] }
     });
+
+    const watchedServiceTypes = watch('service_types');
 
     const fetchData = async () => {
         setLoading(true);
@@ -125,7 +134,7 @@ export default function TeamManagementPage() {
 
     const openNewModal = () => {
         setEditingId(null);
-        reset({ active: true, hourly_cost: 0, max_active_os: 5, work_schedule: 'Seg-Sex, 08h as 18h' });
+        reset({ active: true, hourly_cost: 0, max_active_os: 5, work_schedule: 'Seg-Sex, 08h as 18h', service_types: ['vehicle', 'machine', 'facility'] });
         setIsModalOpen(true);
     };
 
@@ -138,6 +147,7 @@ export default function TeamManagementPage() {
             hourly_cost: tech.hourly_cost || 0,
             work_schedule: tech.work_schedule || 'Seg-Sex, 08h as 18h',
             max_active_os: tech.max_active_os || 5,
+            service_types: tech.service_types || ['vehicle', 'machine', 'facility'],
             active: tech.active
         });
         setIsModalOpen(true);
@@ -237,8 +247,15 @@ export default function TeamManagementPage() {
                                             {tech.name}
                                             <div className="text-xs text-slate-400 font-normal">{tech.contact || 'Sem contato'}</div>
                                         </TableCell>
-                                        <TableCell className="text-slate-300 max-w-[200px] truncate">
-                                            <span title={tech.specialties}>{tech.specialties}</span>
+                                        <TableCell className="text-slate-300 max-w-[200px]">
+                                            <span className="truncate block" title={tech.specialties}>{tech.specialties}</span>
+                                            <div className="flex gap-1 mt-1 flex-wrap">
+                                                {(tech.service_types || ['vehicle', 'machine', 'facility']).map((t: string) => (
+                                                    <span key={t} className="px-1.5 py-0.5 rounded text-[9px] font-medium bg-[#00E5FF]/10 text-[#00E5FF] border border-[#00E5FF]/20">
+                                                        {SERVICE_TYPE_OPTIONS.find(o => o.value === t)?.emoji} {SERVICE_TYPE_OPTIONS.find(o => o.value === t)?.label || t}
+                                                    </span>
+                                                ))}
+                                            </div>
                                         </TableCell>
                                         <TableCell className="text-slate-300">
                                             <div className="text-sm">{tech.work_schedule}</div>
@@ -291,6 +308,28 @@ export default function TeamManagementPage() {
                             <label className="block text-sm font-medium text-slate-300">Especialidades</label>
                             <Input {...register('specialties')} placeholder="Ex: Elétrica automotiva, Ar condicionado, Mecânica Diesel..." className="mt-1 bg-black/20 border-white/10 text-white" />
                             {errors.specialties && <p className="text-red-400 text-xs mt-1">{errors.specialties.message}</p>}
+                        </div>
+
+                        <div className="col-span-2">
+                            <label className="block text-sm font-medium text-slate-300 mb-2">Tipos de Serviço</label>
+                            <div className="flex gap-2">
+                                {SERVICE_TYPE_OPTIONS.map(opt => {
+                                    const isChecked = (watchedServiceTypes || []).includes(opt.value);
+                                    return (
+                                        <button key={opt.value} type="button"
+                                            onClick={() => {
+                                                const current = watchedServiceTypes || [];
+                                                const next = isChecked ? current.filter(v => v !== opt.value) : [...current, opt.value];
+                                                setValue('service_types', next.length > 0 ? next : [opt.value]);
+                                            }}
+                                            className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium border transition-all ${
+                                                isChecked ? 'border-[#00E5FF] bg-[#00E5FF]/10 text-[#00E5FF]' : 'border-white/10 bg-black/20 text-slate-400 hover:border-white/20'
+                                            }`}>
+                                            <span>{opt.emoji}</span> {opt.label}
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
 
                         <div className="col-span-2 p-4 bg-black/30 border border-white/5 rounded-lg grid grid-cols-2 gap-4">

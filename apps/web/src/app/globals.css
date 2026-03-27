@@ -17,6 +17,22 @@
   color-scheme: dark;
 }
 
+html {
+  transition: filter 0.3s ease;
+}
+
+.light-theme {
+  filter: invert(1) hue-rotate(180deg) !important;
+  background-color: #050505 !important; /* Keeps the base inverted white pure */
+}
+
+/* Invert media and specific elements back to normal inside light theme */
+.light-theme img,
+.light-theme video,
+.light-theme [data-theme-ignore] {
+  filter: invert(1) hue-rotate(180deg) !important;
+}
+
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);

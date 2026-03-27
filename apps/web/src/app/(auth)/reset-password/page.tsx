@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import { ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ResetPasswordPage() {
@@ -18,13 +16,19 @@ export default function ResetPasswordPage() {
         setMessage(null);
 
         try {
-            const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                redirectTo: `${window.location.origin}/update-password`,
+            const res = await fetch('/api/reset-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email }),
             });
 
-            if (error) throw error;
+            const data = await res.json();
 
-            setMessage('Um link de recuperação foi enviado para o seu e-mail.');
+            if (!res.ok) {
+                throw new Error(data.error || 'Erro ao solicitar recuperação.');
+            }
+
+            setMessage('Um link de recuperação foi enviado para o seu e-mail. Verifique também a caixa de spam.');
             setEmail('');
         } catch (err: any) {
             setError(err.message || 'Erro ao solicitar a recuperação. Verifique o e-mail digitado.');
