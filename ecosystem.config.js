@@ -4,11 +4,11 @@ module.exports = {
       name: 'assetra-web',
       cwd: '/home/ec2-user/Assetra/apps/web',
       script: 'node_modules/next/dist/bin/next',
-      args: 'start -p 3000',
+      args: 'start -p 3001',
       exec_mode: 'fork',
       env: {
         NODE_ENV: 'production',
-        PORT: 3000,
+        PORT: 3001,
       },
       max_memory_restart: '500M',
       instances: 1,
