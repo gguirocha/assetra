@@ -367,7 +367,7 @@ export default function DashboardPage() {
                                                 <defs><linearGradient id="gFuel" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor="#10b981" /><stop offset="95%" stopColor="#065f46" stopOpacity={0.8} /></linearGradient></defs>
                                                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={tickStyle} />
                                                 <YAxis axisLine={false} tickLine={false} tick={tickStyle} />
-                                                <Tooltip cursor={{ fill: 'rgba(16,185,129,0.05)' }} contentStyle={tooltipStyle} itemStyle={{ color: '#10b981', fontWeight: 'bold' }} formatter={(v: number) => `R$ ${v.toFixed(2)}`} />
+                                                <Tooltip cursor={{ fill: 'rgba(16,185,129,0.05)' }} contentStyle={tooltipStyle} itemStyle={{ color: '#10b981', fontWeight: 'bold' }} formatter={(v: number | undefined) => `R$ ${(v ?? 0).toFixed(2)}`} />
                                                 <Bar dataKey="Custo" fill="url(#gFuel)" radius={[4, 4, 0, 0]} barSize={24} />
                                             </BarChart>
                                         </ResponsiveContainer>
