@@ -249,7 +249,7 @@ export default function DashboardPage() {
                         <Button
                             key={p.key}
                             size="sm"
-                            variant={periodKey === p.key ? 'default' : 'ghost'}
+                            variant={periodKey === p.key ? 'primary' : 'ghost'}
                             onClick={() => setPeriodKey(p.key)}
                             className={periodKey === p.key
                                 ? 'bg-gradient-to-r from-[#5B5CFF] to-[#00E5FF] text-white border-0 text-xs'
