@@ -3,8 +3,9 @@ module.exports = {
     {
       name: 'assetra-web',
       cwd: '/home/ec2-user/Assetra/apps/web',
-      script: 'node_modules/.bin/next',
+      script: 'node_modules/next/dist/bin/next',
       args: 'start -p 3000',
+      exec_mode: 'fork',
       env: {
         NODE_ENV: 'production',
         PORT: 3000,
@@ -16,6 +17,7 @@ module.exports = {
       name: 'assetra-api',
       cwd: '/home/ec2-user/Assetra/apps/api',
       script: 'dist/index.js',
+      exec_mode: 'fork',
       env: {
         NODE_ENV: 'production',
         PORT: 3333,
